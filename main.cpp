@@ -228,6 +228,15 @@ void drawBasket(float Bx, float By, float Bradius, bool enlarged) {
     glEnd();
 }
 
+// 100. Bomb 
+void drawBomb(int x, int y, int r) {
+    drawCircle(x, y, r, 0.05,0.05,0.05);
+    glColor3f(0.8,0.8,0.8);
+    glBegin(GL_LINES);
+    glVertex2i(x, y+r); glVertex2i(x, y+r+13);
+    glEnd();
+    drawCircle(x, y+r+16, 4, 1,0.3,0.1);
+}
 
 
 // 57. Environment
