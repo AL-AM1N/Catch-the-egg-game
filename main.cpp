@@ -428,7 +428,167 @@ void update(int value) {
 }
 
 
+// 100. Input keyboard and mouse
+void keyboard(unsigned char key, int x, int y) {
+    if(gameState==MENU) {
+        if(key=='1') {
+            score=0; gameTime=40; eggs.clear();
+            basket={winW/2, 50, 110, 35};
+            slowFallTimer=0; basket.enlarged=false; lives=3;
+            gameState=PLAYING;
+            glutTimerFunc(16, update, 0);
+        }
+        else if(key=='2') gameState=HISCORE;
+        else if(key=='3') gameState=HELP;
+        else if(key=='4') exit(0);
+    }
+    else if(gameState==HELP || gameState==HISCORE) {
+        if(key==13 || key==27) gameState=MENU;
+    }
+    else if(gameState==PLAYING) {
+        int basketWcur = basket.enlarged ? basket.w+40 : basket.w;
+        if(key==27) gameState=PAUSED;
+        if(key=='a'||key=='A') {
+            basket.x -= 28;
+            
+            if(basket.x - basketWcur/2 < 0) basket.x = basketWcur/2;
+        }
+        if(key=='d'||key=='D') {
+            basket.x += 28;
+            
+            if(basket.x + basketWcur/2 > winW) basket.x = winW - basketWcur/2;
+        }
+    }
+    else if(gameState==PAUSED) {
+        if(key==13) { gameState=PLAYING; glutTimerFunc(16, update, 0);}
+        if(key==27) gameState=MENU;
+    }
+    else if(gameState==GAMEOVER) {
+        if(key==13) gameState=MENU;
+    }
+    glutPostRedisplay();
+}
 
+void mouse(int button, int state, int x, int y) {
+    if(gameState==PLAYING && button==GLUT_LEFT_BUTTON && state==GLUT_DOWN) {
+        int basketWcur = basket.enlarged ? basket.w+40 : basket.w;
+        basket.x = x;
+        
+        if(basket.x - basketWcur/2 < 0) basket.x = basketWcur/2;
+        if(basket.x + basketWcur/2 > winW) basket.x = winW - basketWcur/2;
+        glutPostRedisplay();
+    }
+}
+
+
+// 100. Main Display 
+void displayLives() {
+    for(int i=0; i<MAX_LIVES; i++) {
+        int x = 28 + i*34;
+        int y = winH-75;
+        if(i < lives) drawHeart(x, y, 16);
+        else {
+            glColor3f(0.4,0.4,0.4);
+            glBegin(GL_POLYGON);
+            for(float t = 0; t < 3.14159*2; t += 0.04) {
+                float xx = x + 16 * 16 * pow(sin(t),3) / 15.0;
+                float yy = y - 16 * (13*cos(t) - 5*cos(2*t) - 2*cos(3*t) - cos(4*t)) / 15.0;
+                glVertex2f(xx, yy);
+            }
+            glEnd();
+        }
+    }
+}
+
+void drawCenteredText(float y, const char* s, void* font=GLUT_BITMAP_TIMES_ROMAN_24, float r=0, float g=0, float b=0) {
+    int text_width = 0;
+    for (int i = 0; s[i]; i++)
+        text_width += glutBitmapWidth(font, s[i]);
+    float x = winW / 2 - text_width / 2;
+    glColor3f(r,g,b);
+    glRasterPos2f(x, y);
+    for (int i = 0; s[i]; i++)
+        glutBitmapCharacter(font, s[i]);
+}
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    drawSky();
+    drawClouds();
+    drawGrass();
+    drawTree(80, 40);
+    drawTree(winW-140, 30);
+
+    if(gameState==MENU) {
+        
+        drawCenteredText(winH-120, "Catch The Egg Game", GLUT_BITMAP_TIMES_ROMAN_24, 0.15,0.18,0.5);
+        
+        drawCenteredText(winH-160, "Developed by", GLUT_BITMAP_HELVETICA_18, 0.2,0.2,0.2);
+        drawCenteredText(winH-185, "MD. AL-AMIN (21201057)", GLUT_BITMAP_HELVETICA_18, 0.2,0.2,0.2);
+        drawCenteredText(winH-210, "Tabassum Jahan Moumi (21201100)", GLUT_BITMAP_HELVETICA_18, 0.2,0.2,0.2);
+
+        
+        drawText(winW/2-170, winH-250, "1. Start Game",0.3,0.15,0.1);
+        drawText(winW/2-170, winH-280, "2. High Score",0.3,0.15,0.1);
+        drawText(winW/2-170, winH-310, "3. Help/Instructions",0.3,0.15,0.1);
+        drawText(winW/2-170, winH-340, "4. Exit",0.3,0.15,0.1);
+        drawText(winW/2-140, winH-390,"Use number keys to select",0,0,0);
+
+
+    }
+    else if(gameState==HISCORE) {
+        drawText(winW/2-120, winH/2, "High Score", 0.1,0.2,0.6);
+        char hs[20]; sprintf(hs,"Score: %d", highScore);
+        drawText(winW/2-60, winH/2-40, hs, 0,0,0);
+        drawText(winW/2-120, winH/2-90, "Press ENTER or ESC to return.",0,0,0);
+    }
+    else if(gameState==HELP) {
+        drawText(winW/2-220, winH-120, "Help / Instructions",0.08,0.2,0.7);
+        drawText(winW/2-320, winH-170, "Move basket: A/D keys or mouse click.",0,0,0);
+        drawText(winW/2-320, winH-200, "Catch eggs for points, avoid poop (-10).",0,0,0);
+        drawText(winW/2-320, winH-230, "Golden egg:10, Blue:5, Normal:1 point.",0,0,0);
+        drawText(winW/2-320, winH-260, "Perks: Green=Big basket, Blue=Slow eggs, Pink=Extra time.",0,0,0);
+        drawText(winW/2-320, winH-290, "Black Bomb: lose 1 life!",0,0,0);
+        drawText(winW/2-320, winH-315, "Red Heart: gain 1 life (max 3).",0,0,0);
+        drawText(winW/2-320, winH-340, "Eggs may drift with airflow.",0,0,0);
+        drawText(winW/2-320, winH-365, "Pause: ESC, Resume: ENTER.",0,0,0);
+        drawText(winW/2-320, winH-390, "Game ends when time/life is up. Try for high score!",0,0,0);
+        drawText(winW/2-120, winH-420, "Press ENTER or ESC to return.",0,0,0);
+    }
+    else if(gameState==PLAYING) {
+        for(int i=0;i<NUM_CHICKENS;i++)
+            drawStick(chickenXs[i], stickY, 110, 12);
+        for(int i=0;i<NUM_CHICKENS;i++)
+            drawChicken(chickenXs[i], stickY+23);
+
+        
+        drawBasket(basket.x, basket.y, 55, basket.enlarged);
+
+        for(Egg& e:eggs) if(e.active) drawEgg(e);
+        char sc[32], tm[32];
+        sprintf(sc,"Score: %d",score);
+        sprintf(tm,"Time: %d", (int)gameTime);
+        drawText(20, winH-40, sc,0.1,0.2,0.6);
+        drawText(winW-140, winH-40, tm,0.1,0.2,0.6);
+        displayLives();
+        if(slowFallTimer>0)
+            drawText(winW/2-70, winH-35, "Slow Fall Active!",0.2,0.7,0.8);
+        if(basket.enlarged)
+            drawText(winW/2-70, winH-65, "Large Basket!",0.8,0.7,0.2);
+    }
+    else if(gameState==PAUSED) {
+        drawText(winW/2-100, winH/2+30, "Game Paused",0.5,0.2,0.2);
+        drawText(winW/2-140, winH/2-10, "Press ENTER to Resume.",0,0,0);
+        drawText(winW/2-140, winH/2-50, "Press ESC for Menu.",0,0,0);
+    }
+    else if(gameState==GAMEOVER) {
+        drawText(winW/2-100, winH/2+30, "Game Over!",0.5,0.2,0.2);
+        char sc[20]; sprintf(sc,"Your Score: %d",score);
+        drawText(winW/2-80, winH/2-20, sc,0,0,0);
+        drawText(winW/2-120, winH/2-60, "Press ENTER for Menu.", 0,0,0);
+    }
+    glFlush();
+}
 
 
 void myInit() {
