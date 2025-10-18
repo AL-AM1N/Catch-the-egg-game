@@ -237,6 +237,18 @@ void drawBomb(int x, int y, int r) {
     glEnd();
     drawCircle(x, y+r+16, 4, 1,0.3,0.1);
 }
+// 100. Heart Shape
+void drawHeart(int x, int y, int size) {
+    glColor3f(1,0.1,0.4);
+    glBegin(GL_POLYGON);
+   
+    for(float t = 0; t < 3.14159*2; t += 0.04) {
+        float xx = x + size * 16 * pow(sin(t),3) / 15.0;
+        float yy = y - size * (13*cos(t) - 5*cos(2*t) - 2*cos(3*t) - cos(4*t)) / 15.0;
+        glVertex2f(xx, yy);
+    }
+    glEnd();
+}
 
 
 // 57. Environment
