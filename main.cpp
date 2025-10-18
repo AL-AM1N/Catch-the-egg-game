@@ -108,6 +108,76 @@ void drawStick(int x, int y, int w, int h) {
     glEnd();
 }
 
+// 100. Chicken Drawing 
+void drawChicken(int x, int y) {
+    // Body
+    drawEllipse(x, y-5, 25, 35, 1, 0.95, 0.8);
+
+    // Head
+    drawCircle(x, y+25, 15, 1, 0.95, 0.8);
+
+    // Beak
+    glColor3f(1, 0.7, 0.2);
+    glBegin(GL_TRIANGLES);
+    glVertex2i(x, y+25);
+    glVertex2i(x+8, y+20);
+    glVertex2i(x+3, y+15);
+    glEnd();
+
+    // Comb
+    glColor3f(0.9, 0.2, 0.2);
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2i(x, y+40);
+    glVertex2i(x-4, y+38);
+    glVertex2i(x-2, y+36);
+    glVertex2i(x, y+35);
+    glVertex2i(x+2, y+36);
+    glVertex2i(x+4, y+38);
+    glEnd();
+
+    // Jhuti
+    drawEllipse(x-2, y+18, 3, 2, 0.9, 0.2, 0.2);
+
+    // Eyes
+    drawCircle(x-4, y+28, 2, 0, 0, 0);
+    drawCircle(x+4, y+28, 2, 0, 0, 0);
+
+    // Wings
+    drawEllipse(x-18, y-8, 12, 8, 0.98, 0.97, 0.75);
+    drawEllipse(x+18, y-8, 12, 8, 0.98, 0.97, 0.75);
+
+    // Tail feathers
+    glColor3f(0.8, 0.8, 0.9);
+    glBegin(GL_TRIANGLES);
+    glVertex2i(x-25, y-15);
+    glVertex2i(x-15, y-10);
+    glVertex2i(x-20, y-5);
+    glEnd();
+
+    glColor3f(0.7, 0.7, 0.8);
+    glBegin(GL_TRIANGLES);
+    glVertex2i(x+25, y-15);
+    glVertex2i(x+15, y-10);
+    glVertex2i(x+20, y-5);
+    glEnd();
+
+    // Legs
+    glColor3f(1, 0.8, 0.2);
+    glLineWidth(3);
+    glBegin(GL_LINES);
+    // Left leg
+    //glVertex2i(x-8, y-35);
+    //glVertex2i(x-8, y-50);
+    //glVertex2i(x-8, y-50);
+    //glVertex2i(x-12, y-55);
+    // Right leg
+    //glVertex2i(x+8, y-35);
+    //glVertex2i(x+8, y-50);
+    //glVertex2i(x+8, y-50);
+    //glVertex2i(x+12, y-55);
+    //glEnd();
+    glLineWidth(1);
+}
 
 
 // 57. Basket
