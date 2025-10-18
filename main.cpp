@@ -52,7 +52,20 @@ int slowFallTimer = 0;
 int lives = 3;
 const int MAX_LIVES = 3;
 
+// 100. sound functions 
+void playSound(const char* soundFile) {
+    std::string fullPath = "sounds/" + std::string(soundFile);
+    if (!PlaySoundA(fullPath.c_str(), NULL, SND_FILENAME | SND_ASYNC)) {
+        
+        PlaySoundA(soundFile, NULL, SND_FILENAME | SND_ASYNC);
+    }
+}
 
+void playScoreSound() { playSound("score.wav"); }
+void playBombSound() { playSound("bomb.wav"); }
+void playLifeSound() { playSound("life.wav"); }
+void playPerkSound() { playSound("perk.wav"); }
+void playPoopSound() { playSound("poop.wav"); }
 
 
 // 57. Drawing Utilities
